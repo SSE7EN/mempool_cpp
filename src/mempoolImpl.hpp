@@ -74,13 +74,13 @@ void MempoolManager<T>::freeBlock(mempoolBlockS<T> *block){
 		}
 
 		block->next = this->mempool.freeBlocks;
-		block->preev = nullptr;
+		block->prev = nullptr;
 
 		if(this->mempool.freeBlocks != nullptr){
-			this->mempool.freeblocks->prev = block;
+			this->mempool.freeBlocks->prev = block;
 		}
 
-		this->mempool.freeblocks = block;	
+		this->mempool.freeBlocks = block;	
 	}
 	
 };
@@ -89,13 +89,23 @@ template <typename T>
 mempoolBlockS<T>* MempoolManager<T>::allocateBlock(T data){
 	mempoolBlockS<T> *block = nullptr;
 	
-	if(this->mempool.freeBlock != nullptr){
+	if(this->mempool.freeBlocks != nullptr){
 		block = this->mempool.freeBlocks;
 		this->mempool.freeBlocks = block->next;
 		this->mempool.freeBlocks->prev = nullptr;
 
-		block->next = this->mempool.alocatedBlocks;
-		this->mempool.allocatedBlocks->prev = block;
+		block->data = data;
+
+		if(this->mempool.allocatedBlocks != nullptr){
+			block->next = this->mempool.allocatedBlocks;
+			this->mempool.allocatedBlocks->prev = block;
+		}
+		else{
+			block->next = nullptr;
+			block->prev = nullptr;
+		}
+		this->mempool.allocatedBlocks = block;
+
 	}
 
 
